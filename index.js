@@ -1,3 +1,12 @@
+/*
+0 Obter um usuario
+1 Obter o numero de telefone de um usuario a partir de seu Id
+2 Obter o endereco do usuario pelo Id
+ */
+//importamos um módulo interno do node.js
+const util = require('util')
+const obterEnderecoAsync = util.promisify(obterEndereco)
+
 function obterUsuario(){
     //quando der algum problema -> reject(ERRO)
     //quando sucess -> RESOLV
@@ -51,8 +60,22 @@ usuarioPromise
             }
         })
     })
+    .then(function (resultado){
+        const endereco = obterEnderecoAsync(resultado.usuario.id)
+        return endereco.then(function resolverEndereco(result){
+            return{
+                usuario: resultado.usuario,
+                telefone: resultado.telefone,
+                endereco: result
+            }
+        });
+    })
     .then(function (resultado) {
-        console.log('resultado', resultado)
+        console.log(`
+            Nome: ${resultado.usuario.nome},
+            Endereco: ${resultado.endereco.rua}, ${resultado.endereco.numero},
+            Telefone: ${resultado.telefone.ddd} ${resultado.telefone.telefone}
+        `)
     })
     .catch(function(error) {
         console.error('DEU RUIM', error)
